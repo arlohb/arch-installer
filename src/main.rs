@@ -78,7 +78,8 @@ fn main() -> Result<(), std::io::Error> {
         disk.remove_partition(Some(id), None)?;
     }
 
-    let efi_part_id = disk.add_partition("EFI", 512, gpt::partition_types::EFI, 0, None)?;
+    let efi_part_id =
+        disk.add_partition("EFI", 550 * 1024 * 1024, gpt::partition_types::EFI, 0, None)?;
     let efi_part_device = format!("{disk_path}{efi_part_id}");
 
     let free_space = disk
@@ -142,17 +143,18 @@ fn main() -> Result<(), std::io::Error> {
     println!("Setting hostname...");
     std::fs::write("/mnt/etc/hostname", hostname)?;
 
-    println!("Setting the root passwd to 'root'...");
-    run_cmd!(arch-chroot /mnt echo root:root | chpasswd)?;
+    println!("Enter the new root password twice");
+    run_cmd!(arch-chroot /mnt passwd)?;
 
     println!("Installing grub");
-    run_cmd!(arch-chroot /mnt pacman -S grub efibootmgr)?;
+    run_cmd!(arch-chroot /mnt pacman --noconfirm -S grub efibootmgr)?;
     run_cmd!(arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB)?;
-    run_cmd!(arch-chroot /mnt pacman -S amd-ucode)?;
+    run_cmd!(arch-chroot /mnt pacman --noconfirm -S amd-ucode)?;
     run_cmd!(arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg)?;
 
     println!("Unmounting filesystem...");
-    run_cmd!(umount - R / mnt)?;
+    #[rustfmt::skip]
+    run_cmd!(umount -R /mnt)?;
 
     println!("\n\nArch is now installed!\n");
     println!("The root password is 'root'\n");
