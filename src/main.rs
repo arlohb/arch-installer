@@ -15,6 +15,7 @@ pub fn has_internet() -> bool {
     run_cmd!(ping -w 5 www.google.com).is_ok()
 }
 
+#[allow(clippy::too_many_lines)]
 fn main() -> Result<(), std::io::Error> {
     println!("Loading config...");
     let Config {
@@ -140,6 +141,22 @@ fn main() -> Result<(), std::io::Error> {
 
     println!("Setting hostname...");
     std::fs::write("/mnt/etc/hostname", hostname)?;
+
+    println!("Setting the root passwd to 'root'...");
+    run_cmd!(arch-chroot /mnt echo root:root | chpasswd)?;
+
+    println!("Installing grub");
+    run_cmd!(arch-chroot /mnt pacman -S grub efibootmgr)?;
+    run_cmd!(arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB)?;
+    run_cmd!(arch-chroot /mnt pacman -S amd-ucode)?;
+    run_cmd!(arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg)?;
+
+    println!("Unmounting filesystem...");
+    run_cmd!(umount - R / mnt)?;
+
+    println!("\n\nArch is now installed!\n");
+    println!("The root password is 'root'\n");
+    println!("You can now reboot the system\n");
 
     Ok(())
 }
