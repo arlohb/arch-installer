@@ -1,7 +1,6 @@
 #![warn(clippy::unwrap_used, clippy::pedantic, clippy::nursery)]
 
 mod config;
-use std::io::BufRead;
 
 pub use config::*;
 
