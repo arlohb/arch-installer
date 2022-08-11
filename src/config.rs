@@ -11,6 +11,9 @@ pub struct Wifi {
 pub struct Config {
     pub keymap: String,
     pub timezone: String,
+    pub locale: String,
+    pub disk_path: String,
+    pub hostname: String,
     pub wifi: Option<Wifi>,
 }
 

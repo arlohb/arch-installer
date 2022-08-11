@@ -7,6 +7,17 @@ keymap = "uk"
 # $ timedatectl list-timezones
 timezone = "Europe/London"
 
+# These can be found with:
+# $ cat /etc/locale.gen
+locale = "en_GB.UTF-8"
+
+# List devices with:
+# $ fdisk -l
+disk_path = "/dev/sda"
+
+# The hostname of the machine
+hostname = "arch"
+
 [wifi]
 # List devices with either:
 # $ ip link
