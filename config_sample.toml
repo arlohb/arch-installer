@@ -1,0 +1,21 @@
+# List available layouts with:
+# $ ls /usr/share/kbd/keymaps/**/*.map.gz
+# This value is the file name without the path and the extension.
+keymap = "uk"
+
+# List available timezones with:
+# $ timedatectl list-timezones
+timezone = "Europe/London"
+
+[wifi]
+# List devices with either:
+# $ ip link
+# or
+# $ iwctl device list
+device = "wlan0"
+
+# Available networks can be listed with:
+# $ iwctl station {device} scan
+# $ iwctl station {device} get-networks
+ssid = "your_wifi_ssid"
+password = "your_wifi_password"
