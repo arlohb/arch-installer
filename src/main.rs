@@ -1,4 +1,5 @@
 #![warn(clippy::unwrap_used, clippy::pedantic, clippy::nursery)]
+#![allow(clippy::let_underscore_drop)]
 
 mod config;
 
@@ -49,8 +50,9 @@ fn main() -> Result<(), std::io::Error> {
     } = Config::load(args.config_file);
 
     println!("Turning off beeps...");
-    run_cmd!(rmmod pcspkr)?;
-    run_cmd!(echo "blacklist pcspkr" >>/etc/modprobe.d/blacklist.conf)?;
+    if run_cmd!(rmmod pcspkr).is_ok() {
+        run_cmd!(echo "blacklist pcspkr" >>/etc/modprobe.d/blacklist.conf)?;
+    }
 
     println!("Loading keymap...");
     run_cmd!(loadkeys $keymap)?;
@@ -123,7 +125,8 @@ fn main() -> Result<(), std::io::Error> {
     disk.write()?;
 
     println!("Creating filesystem...");
-    run_cmd!(mkfs.ext4 $fs_part_device)?;
+    // yes creates an error which we can ignore
+    let _ = run_cmd!(yes | mkfs.ext4 $fs_part_device);
     run_cmd!(mkfs.fat -F 32 $efi_part_device)?;
 
     println!("Mounting filesystem...");
