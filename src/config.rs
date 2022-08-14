@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use serde_derive::Deserialize;
 
 #[derive(Deserialize)]
@@ -19,12 +21,8 @@ pub struct Config {
 
 impl Config {
     #[must_use]
-    pub fn load() -> Self {
-        let file_path = std::env::args()
-            .nth(1)
-            .expect("No config file path provided");
-
-        let file = std::fs::read_to_string(file_path).expect("Failed to read config file");
+    pub fn load(path: impl AsRef<Path>) -> Self {
+        let file = std::fs::read_to_string(path).expect("Failed to read config file");
 
         toml::from_str(&file).expect("Failed to parse config file")
     }

@@ -6,7 +6,24 @@ use std::{thread::sleep, time::Duration};
 
 pub use config::*;
 
+use clap::Parser;
 use cmd_lib::run_cmd;
+
+#[derive(clap::ValueEnum, Clone)]
+pub enum Stage {
+    Install,
+    AfterInstall,
+}
+
+#[derive(Parser)]
+#[clap(author = "Arlo Blythe", about = "An arch install script")]
+pub struct Args {
+    /// The path to the config file
+    pub config_file: String,
+    /// The stage to run
+    #[clap(value_enum)]
+    pub stage: Stage,
+}
 
 pub fn cd(path: &str) {
     std::env::set_current_dir(path).expect("Failed to change directory");
@@ -19,6 +36,8 @@ pub fn has_internet() -> bool {
 
 #[allow(clippy::too_many_lines)]
 fn main() -> Result<(), std::io::Error> {
+    let args = Args::parse();
+
     println!("Loading config...");
     let Config {
         keymap,
@@ -27,7 +46,7 @@ fn main() -> Result<(), std::io::Error> {
         disk_path,
         hostname,
         wifi,
-    } = Config::load();
+    } = Config::load(args.config_file);
 
     println!("Turning off beeps...");
     run_cmd!(rmmod pcspkr)?;
@@ -164,7 +183,6 @@ fn main() -> Result<(), std::io::Error> {
     run_cmd!(umount -R /mnt)?;
 
     println!("\n\nArch is now installed!\n");
-    println!("The root password is 'root'\n");
     println!("You can now reboot the system\n");
 
     Ok(())
