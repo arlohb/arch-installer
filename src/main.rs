@@ -2,6 +2,8 @@
 
 mod config;
 
+use std::{thread::sleep, time::Duration};
+
 pub use config::*;
 
 use cmd_lib::run_cmd;
@@ -48,6 +50,11 @@ fn main() -> Result<(), std::io::Error> {
         }) = wifi
         {
             println!("Connecting to wifi...");
+
+            // Initiate scan for networks
+            run_cmd!(iwctl station $device scan)?;
+
+            sleep(Duration::from_secs(2));
 
             // Connect to wifi
             run_cmd!(iwctl --passphrase $password station $device connect $ssid)?;
