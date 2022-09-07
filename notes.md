@@ -26,6 +26,8 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 ln -sf /usr/share/zoneinfo/Europe/London /etc/localetime
 
+hwclock --systohc
+
 # Edit /etc/locale.gen and comment out:
 # "en_GB.UTF-8 UTF-8"
 
